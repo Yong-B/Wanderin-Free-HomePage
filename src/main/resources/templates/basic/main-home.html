@@ -7,17 +7,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
     <style>
+        /* 넥슨 방식: 특정 너비(1400px) 이하로 줄어들면 레이아웃을 고정하고 스크롤바 생성 */
+        body { 
+            font-family: 'Noto Sans KR', sans-serif; 
+            background-color: #f4f4f5; 
+            color: #333; 
+            overflow-x: auto; 
+            min-width: 1400px; /* 메인 콘텐츠가 깨지지 않는 최소 너비 */
+        }
+
         .smooth-edge-img {
             mask-image: radial-gradient(circle, black 70%, transparent 100%);
             -webkit-mask-image: radial-gradient(circle, black 70%, transparent 100%);
         }
-        html {
-            scrollbar-gutter: stable;
-        }
+        
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
-        
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f4f4f5; color: #333; overflow-x: hidden; }
-        
+
         .play-btn {
             background: linear-gradient(to right, #00c6ff, #0072ff);
             box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3);
@@ -56,7 +61,7 @@
         </div>
         <nav class="absolute left-1/2 -translate-x-1/2">
             <ul class="flex space-x-24 font-bold text-xl text-gray-800">
-                <li class="relative group"><a href="#" class="hover:text-blue-600 transition-colors">소식</a><span class="menu-underline"></span></li>
+                <li class="relative group"><a th:href="@{/news/notice}" class="hover:text-blue-600 transition-colors">소식</a><span class="menu-underline"></span></li>
                 <li class="relative group"><a th:href="@{/info/information}" class="hover:text-blue-600 transition-colors">정보</a><span class="menu-underline"></span></li>
                 <li class="relative group"><a th:href="@{/board}" class="hover:text-blue-600 transition-colors">게시판</a><span class="menu-underline"></span></li>
                 <li class="relative group"><a th:href="@{/support/faq}" class="hover:text-blue-600 transition-colors">고객지원</a><span class="menu-underline"></span></li>
@@ -90,6 +95,24 @@
         <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#67B6F9] to-transparent"></div>
         <div class="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#67B6F9] to-transparent"></div>
         <div class="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[#67B6F9] to-transparent"></div>
+        <div class="puzzle-overlay opacity-20 z-0"></div>
+    </div>
+
+    <div class="absolute right-[39%] top-[25%] z-40 pointer-events-none"
+         style="transform: rotate(-30deg);">
+        <div class="relative bg-[#4A78D8] text-white px-8 py-5 rounded-[3rem] rounded-br-[1.5rem] border-4 border-white/10">
+            <div class="absolute top-3 left-6 w-12 h-2 bg-white/20 rounded-full rotate-[-15deg]"></div>
+            <div class="absolute top-6 left-4 w-4 h-1.5 bg-white/20 rounded-full rotate-[-15deg]"></div>
+
+            <p class="text-2xl font-[900] italic tracking-tight leading-tight select-none">
+                무엇을<br>도와줄까?
+            </p>
+
+            <div class="absolute bottom-[-18px] right-8 w-0 h-0 
+                    border-t-[20px] border-t-[#4A78D8] 
+                    border-r-[20px] border-r-transparent">
+            </div>
+        </div>
     </div>
 
     <div class="absolute top-0 right-0 z-30 w-72">
@@ -97,16 +120,6 @@
             <th:block th:if="${session.loginMember == null}">
                 <button onclick="location.href='/login'" class="play-btn w-full py-6 text-white text-3xl font-[900] rounded-lg mb-2">게임구매</button>
                 <div class="text-[11px] text-gray-400 font-medium">로그인이 필요합니다</div>
-            </th:block>
-
-            <th:block th:if="${session.loginMember != null && !session.loginMember.hasGame}">
-                <button onclick="selectAndPay()" class="play-btn w-full py-6 text-white text-3xl font-[900] rounded-lg mb-2">지금구매</button>
-                <div class="text-[11px] text-blue-500 font-bold">회원 한정 할인 적용 중</div>
-            </th:block>
-
-            <th:block th:if="${session.loginMember != null && session.loginMember.hasGame}">
-                <button class="bg-green-600 hover:bg-green-700 w-full py-6 text-white text-3xl font-[900] rounded-lg mb-2 transition-all">게임실행</button>
-                <div class="text-[11px] text-green-600 font-bold">최신 버전 플레이 가능</div>
             </th:block>
         </div>
     </div>
@@ -125,12 +138,12 @@
 
 <section class="relative bg-[#f9fafb] pt-10 pb-24 overflow-hidden border-t border-gray-200">
     <div class="max-w-[1800px] mx-auto px-10 relative z-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div class="grid grid-cols-4 gap-10">
 
             <div class="bg-white rounded-[3.5rem] p-12 border border-gray-200 shadow-sm flex flex-col min-h-[500px]">
                 <div class="flex justify-between items-center mb-12">
                     <h3 class="text-3xl font-black text-gray-900 flex items-center gap-4"><span class="w-2.5 h-10 bg-blue-600 rounded-full"></span>공지사항</h3>
-                    <a href="#" class="text-2xl text-gray-400 hover:text-blue-600 transition">+</a>
+                    <a th:href="@{/news/notice}" class="text-2xl text-gray-400 hover:text-blue-600 transition">+</a>
                 </div>
                 <ul class="space-y-10">
                     <li class="group cursor-pointer">
@@ -164,15 +177,15 @@
                         <span class="text-5xl mb-4 group-hover:scale-110 transition-transform">🎧</span>
                         <span class="text-xl text-gray-800 font-black group-hover:text-indigo-600">디스코드</span>
                     </a>
-                    <a href="#" class="h-40 bg-gray-50 rounded-[2.5rem] flex flex-col items-center justify-center hover:bg-red-50 transition-all group border border-gray-100 shadow-sm">
+                    <a href="https://www.youtube.com/watch?v=_DI_c8rBqQ4" target="_blank" rel="noopener noreferrer" class="h-40 bg-gray-50 rounded-[2.5rem] flex flex-col items-center justify-center hover:bg-red-50 transition-all group border border-gray-100 shadow-sm">
                         <span class="text-5xl mb-4 group-hover:scale-110 transition-transform">📺</span>
                         <span class="text-xl text-gray-800 font-black group-hover:text-red-600">유튜브</span>
                     </a>
-                    <a th:href="@{support/faq}" class="h-40 bg-gray-50 rounded-[2.5rem] flex flex-col items-center justify-center hover:bg-green-50 transition-all group border border-gray-100 shadow-sm">
-                        <span class="text-5xl mb-4 group-hover:scale-110 transition-transform">💡</span>
-                        <span class="text-xl text-gray-800 font-black group-hover:text-green-600">FAQ</span>
+                    <a th:href="@{/board}" class="h-40 bg-gray-50 rounded-[2.5rem] flex flex-col items-center justify-center hover:bg-green-50 transition-all group border border-gray-100 shadow-sm">
+                        <span class="text-5xl mb-4 group-hover:scale-110 transition-transform">💬</span>
+                        <span class="text-xl text-gray-800 font-black group-hover:text-green-600">게시판</span>
                     </a>
-                    <a href="#" class="h-40 bg-gray-50 rounded-[2.5rem] flex flex-col items-center justify-center hover:bg-gray-100 transition-all group border border-gray-100 shadow-sm">
+                    <a th:href="@{/support/faq}" class="h-40 bg-gray-50 rounded-[2.5rem] flex flex-col items-center justify-center hover:bg-gray-100 transition-all group border border-gray-100 shadow-sm">
                         <span class="text-5xl mb-4 group-hover:scale-110 transition-transform">🛡️</span>
                         <span class="text-xl text-gray-800 font-black">고객지원</span>
                     </a>
@@ -189,36 +202,20 @@
                         <span class="text-sm font-bold text-red-500 uppercase">Live</span>
                     </div>
                 </div>
-
-                <div class="flex-grow space-y-5">
+                <div class="flex-grow space-y-5 font-bold">
                     <div class="flex justify-between items-center bg-white/60 p-4 rounded-[1.5rem] shadow-sm border border-white">
-                        <span class="text-lg font-black text-gray-800">👑 1. 해랑왕</span>
-                        <span class="text-lg font-mono font-bold text-[#92400E]">01:24</span>
+                        <span class="text-lg text-gray-800">👑 1. 해랑왕</span>
+                        <span class="text-lg font-mono text-[#92400E]">01:24</span>
                     </div>
-                    <div class="flex justify-between items-center px-4">
-                        <span class="text-lg font-bold text-gray-700">🥈 2. 해랑킹</span>
-                        <span class="text-lg font-mono text-gray-400">01:38</span>
-                    </div>
-                    <div class="flex justify-between items-center px-4 border-b border-[#FEF3C7] pb-4">
-                        <span class="text-lg font-bold text-gray-700">🥉 3. 해랑퀸</span>
-                        <span class="text-lg font-mono text-gray-400">01:45</span>
-                    </div>
-                    <div class="pt-4 space-y-3">
-                        <div class="flex justify-between text-sm text-gray-600 px-4 font-bold">
-                            <span>4. 박</span>
-                            <span>02:35</span>
-                        </div>
-                        <div class="flex justify-between text-sm text-[#B45309] px-4 font-black text-lg mt-6">
-                            <span>10. 종</span>
-                            <span>04:20</span>
-                        </div>
+                    <div class="pt-4 space-y-3 text-gray-600">
+                        <div class="flex justify-between text-sm px-4"><span>4. 박</span><span>02:35</span></div>
+                        <div class="flex justify-between text-[#B45309] px-4 text-lg mt-6 font-black"><span>10. 종</span><span>04:20</span></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-
 <script th:inline="javascript">
     async function selectAndPay() {
         const { value: pg } = await Swal.fire({
