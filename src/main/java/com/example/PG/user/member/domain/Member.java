@@ -3,7 +3,6 @@ package com.example.PG.user.member.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -42,6 +41,11 @@ public class Member {
     public void setHasGame(Boolean hasGame) {
         this.hasGame = hasGame;
     }
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING) // DB에 문자열(USER/ADMIN)로 저장
+    @Column(nullable = false)
+    private Role role = Role.USER;
 
     /** 비밀번호 암호화 로직 */
     public Member encodePassword(PasswordEncoder passwordEncoder) {
