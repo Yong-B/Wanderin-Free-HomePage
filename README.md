@@ -27,7 +27,9 @@ Wanderin' Free HomePage 는 퍼즐 게임 공식 홈페이지입니다.
 
 <p align="left"> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/> 
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"/> </p>
+  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"/> 
+  <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"/>
+</p>
   
 * **Containerization:** **Docker**를 활용하여 어플리케이션과 DB 환경을 컨테이너화
   - 환경에 구애받지 않는 일관된 개발 및 배포 환경(Standardized Environment) 구축
