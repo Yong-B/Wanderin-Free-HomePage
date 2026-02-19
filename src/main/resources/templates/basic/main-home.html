@@ -275,40 +275,73 @@
         if (pg) requestPay(pg);
     }
 
-    function requestPay(pgId) {
+    async function requestPay(pgId) {
+    try {
+        // [STEP 1] 서버에 결제 준비 요청 (Order 생성 및 가격 받아오기)
+        // 하드코딩된 가격 대신 서버가 주는 가격을 사용하게 됩니다.
+        const prepareRes = await fetch('/payment/prepare', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!prepareRes.ok) throw new Error('주문 생성 실패');
+        
+        const orderInfo = await prepareRes.json(); 
+        // 서버에서 반환한 { merchant_uid: "...", amount: 30000 } 사용
+
+        // [STEP 2] 아임포트 결제창 실행
         const IMP = window.IMP;
-        IMP.init("imp78358032");
+        IMP.init("imp78358032"); 
+        
         const memberName = [[${session.loginMember?.name}]] || '회원';
         const memberEmail = [[${session.loginMember?.email}]] || 'email@example.com';
 
         IMP.request_pay({
             pg: pgId,
             pay_method: "card",
-            merchant_uid: "wanderin_" + new Date().getTime(),
+            merchant_uid: orderInfo.merchant_uid, // 서버가 생성한 UID
             name: "Wanderin' Free 정품 구매",
-            amount: 30000,
+            amount: orderInfo.amount,             // 서버가 정한 금액
             buyer_email: memberEmail,
             buyer_name: memberName
         }, function (rsp) {
             if (rsp.success) {
+                // [STEP 3] 결제 성공 시 서버에 검증 요청
                 Swal.fire({
                     title: '결제 검증 중',
+                    text: '잠시만 기다려주세요...',
                     background: '#FFFBEB',
+                    allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
+
                 fetch(`/payment/validation/${rsp.imp_uid}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: 30000 })
+                    body: JSON.stringify({ 
+                        merchant_uid: orderInfo.merchant_uid 
+                    })
                 }).then(res => {
                     if (res.ok) {
-                        Swal.fire({ title: '구매 완료!', icon: 'success', background: '#FFFBEB' })
-                        .then(() => { location.reload(); });
+                        Swal.fire({ 
+                            title: '구매 완료!', 
+                            text: '이제 게임을 실행할 수 있습니다.',
+                            icon: 'success', 
+                            background: '#FFFBEB' 
+                        }).then(() => { location.reload(); }); // 새로고침하여 '게임실행' 버튼 확인
+                    } else {
+                        Swal.fire('검증 실패', '결제 정보가 유효하지 않습니다.', 'error');
                     }
                 });
+            } else {
+                Swal.fire('결제 실패', rsp.error_msg, 'error');
             }
         });
+    } catch (error) {
+        console.error(error);
+        Swal.fire('오류 발생', '주문 처리 중 문제가 발생했습니다.', 'error');
     }
+}
 </script>
 </body>
 </html>
