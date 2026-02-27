@@ -94,7 +94,7 @@
         <div class="relative w-full border-b-2 border-gray-200 mb-16 flex items-end justify-between pb-2">
             <div class="flex items-center space-x-6">
                 <h1 class="text-5xl font-black text-gray-900 tracking-tight">공지사항</h1>
-                <th:block th:if="${session.loginMember != null && session.loginMember.role == 'ADMIN'}">
+                <th:block th:if="${session.loginMember != null and #strings.equals(session.loginMember.role, 'ADMIN')}">
                     <div class="flex space-x-2 mb-1">
                         <button onclick="location.href='/news/notice/write'" class="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black hover:bg-blue-700 transition-all shadow-lg">+ 공지 작성</button>
                         <button onclick="location.href='/news/notice/write?type=PATCH'" class="bg-gray-800 text-white px-5 py-2 rounded-full text-sm font-black hover:bg-black transition-all shadow-lg">+ 패치 작성</button>
